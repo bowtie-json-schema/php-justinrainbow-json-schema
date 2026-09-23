@@ -8,6 +8,7 @@ use Composer\InstalledVersions;
 use JsonSchema\Constraints\Constraint;
 use JsonSchema\Constraints\Factory;
 use JsonSchema\SchemaStorage;
+use JsonSchema\Uri\UriRetriever;
 use JsonSchema\Validator;
 use RuntimeException;
 use stdClass;
@@ -116,7 +117,9 @@ class TestHarness
 
         $results = [];
 
-        $schemaStorage = new SchemaStorage();
+        $uriRetriever = new UriRetriever();
+        $uriRetriever->setUriRetriever(new LocalOnlyRetriever());
+        $schemaStorage = new SchemaStorage($uriRetriever);
         $factory = new Factory($schemaStorage);
         $validator = new Validator($factory);
         $factory->setDefaultDialect($this->currentDialect ?? $factory->getDefaultDialect());
