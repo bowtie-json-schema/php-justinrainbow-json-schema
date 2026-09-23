@@ -120,12 +120,30 @@ class TestHarness
         $factory = new Factory($schemaStorage);
         $validator = new Validator($factory);
         $factory->setDefaultDialect($this->currentDialect ?? $factory->getDefaultDialect());
-        $schemaStorage->addSchema('internal://mySchema', $request->case->schema);
 
-        if (isset($request->case->registry)) {
-            foreach ($request->case->registry as $id => $schema) {
-                $schemaStorage->addSchema($id, $schema);
+        try {
+            $schemaStorage->addSchema('internal://mySchema', $request->case->schema);
+
+            if (isset($request->case->registry)) {
+                foreach ($request->case->registry as $id => $schema) {
+                    $schemaStorage->addSchema($id, $schema);
+                }
             }
+        } catch (Throwable $e) {
+            $this->debug(
+                'Test case with seq: %d has thrown an exception while loading its schemas: %s',
+                $request->seq,
+                $e->getMessage()
+            );
+
+            return [
+                'seq' => $request->seq,
+                'errored' => true,
+                'context' => [
+                    'message' => $e->getMessage(),
+                    'traceback' => $e->getTraceAsString(),
+                ],
+            ];
         }
 
         foreach ($request->case->tests as $index => $test) {
