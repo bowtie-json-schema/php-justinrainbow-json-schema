@@ -46,6 +46,8 @@ jobs:
       artifact-metadata: write # needed for build provenance attestation
     uses: bowtie-json-schema/bowtie/.github/workflows/harness-ci.yml@3da858b058af9475e47df294a68125bd8bb57144 # main
     with:
+      # Pin to 24.04: on ubuntu-latest (26.04) `qemu-user-static` is a virtual package and fails to install.
+      runs-on: ubuntu-24.04
       ref: ${{ matrix.revision }}
       publish: true
       is-latest: ${{ matrix.revision == 'main' }}
