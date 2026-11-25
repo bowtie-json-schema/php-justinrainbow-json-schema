@@ -115,6 +115,21 @@ class TestHarness
     {
         $this->debug('Running test case with seq: %d', $request->seq);
 
+        $output = $request->output ?? 'flag';
+        if ($output !== 'flag') {
+            return [
+                'seq' => $request->seq,
+                'results' => array_fill(
+                    0,
+                    count($request->case->tests),
+                    [
+                        'skipped' => true,
+                        'message' => sprintf('Unsupported output format: %s', $output),
+                    ]
+                ),
+            ];
+        }
+
         $results = [];
 
         $uriRetriever = new UriRetriever();
