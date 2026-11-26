@@ -12,7 +12,10 @@ FROM php:8.5.7-cli-alpine3.22
 
 WORKDIR /usr/src/json-schema
 
-RUN apk add --no-cache lsb-release-minimal
+RUN apk add --no-cache lsb-release-minimal icu-libs \
+    && apk add --no-cache --virtual .intl-build-deps icu-dev \
+    && docker-php-ext-install intl \
+    && apk del .intl-build-deps
 COPY ./src ./src
 COPY ./bootstrap.php .
 COPY composer.* .
